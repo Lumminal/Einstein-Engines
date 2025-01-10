@@ -197,18 +197,21 @@
   description: This is an expensive, modern recreation of an antique laser gun. This gun has several unique firemodes, but lacks the ability to recharge over time.
   components:
   - type: Sprite
-    sprite: DeltaV/Objects/Weapons/Guns/Battery/energygun.rsi
+    sprite: Objects/Weapons/Guns/Battery/dl88energyrevolver.rsi
     layers:
     - state: base
       map: [ "enum.GunVisualLayers.Base" ]
     - state: mode-disabler
       shader: unshaded
       map: [ "Firemode" ]
-    - state: mag-unshaded-4
+    - state: mode-special
+      shader: unshaded
+      map: [ "Firemode"]
+    - state: mag-unshaded-1
       map: [ "enum.GunVisualLayers.MagUnshaded" ]
       shader: unshaded
   - type: Clothing
-    sprite: DeltaV/Objects/Weapons/Guns/Battery/energygun.rsi
+    sprite: Objects/Weapons/Guns/Battery/dl88energyrevolver.rsi
     quickEquip: false
     slots:
     - suitStorage
@@ -233,7 +236,7 @@
     - proto: BulletTracker
       fireCost: 125
       name: track
-      state: lethal
+      state: special
   - type: MagazineVisuals
     magState: mag
     steps: 5
@@ -244,7 +247,7 @@
       enum.EnergyGunFireModeVisuals.State:
         Firemode:
           Disabler: { state: mode-disabler }
-          Lethal: { state: mode-lethal }
+          Special: { state: mode-special }
   - type: Tag
     tags:
     - Sidearm
