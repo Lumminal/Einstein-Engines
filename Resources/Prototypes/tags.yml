@@ -1312,6 +1312,9 @@
   id: ToySidearm
 
 - type: Tag
+  id: TrackerProjectile
+
+- type: Tag
   id: Trash
 
 - type: Tag

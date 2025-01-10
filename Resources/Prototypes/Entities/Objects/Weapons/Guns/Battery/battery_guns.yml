@@ -191,6 +191,66 @@
     zeroVisible: true
 
 - type: entity
+  name: dl-88 energy revolver
+  parent: BaseWeaponBatterySmall
+  id: WeaponEnergyTrackerRevolver
+  description: This is an expensive, modern recreation of an antique laser gun. This gun has several unique firemodes, but lacks the ability to recharge over time.
+  components:
+  - type: Sprite
+    sprite: DeltaV/Objects/Weapons/Guns/Battery/energygun.rsi
+    layers:
+    - state: base
+      map: [ "enum.GunVisualLayers.Base" ]
+    - state: mode-disabler
+      shader: unshaded
+      map: [ "Firemode" ]
+    - state: mag-unshaded-4
+      map: [ "enum.GunVisualLayers.MagUnshaded" ]
+      shader: unshaded
+  - type: Clothing
+    sprite: DeltaV/Objects/Weapons/Guns/Battery/energygun.rsi
+    quickEquip: false
+    slots:
+    - suitStorage
+    - Belt
+    - Back
+  - type: Gun
+    fireRate: 1.5
+    soundGunshot:
+      path: /Audio/DeltaV/Weapons/Guns/Gunshots/laser.ogg
+  - type: Battery
+    maxCharge: 1000
+    startingCharge: 1000
+  - type: ProjectileBatteryAmmoProvider
+    proto: BulletDisabler
+    fireCost: 100
+  - type: EnergyGun
+    fireModes:
+    - proto: BulletDisabler
+      fireCost: 55
+      name: disable
+      state: disabler
+    - proto: BulletTracker
+      fireCost: 125
+      name: track
+      state: lethal
+  - type: MagazineVisuals
+    magState: mag
+    steps: 5
+    zeroVisible: true
+  - type: Appearance
+  - type: GenericVisualizer
+    visuals:
+      enum.EnergyGunFireModeVisuals.State:
+        Firemode:
+          Disabler: { state: mode-disabler }
+          Lethal: { state: mode-lethal }
+  - type: Tag
+    tags:
+    - Sidearm
+    - TrackerProjectile
+
+- type: entity
   name: retro laser blaster
   parent: BaseWeaponBatterySmall
   id: WeaponLaserGun

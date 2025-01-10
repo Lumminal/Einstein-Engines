@@ -1,3 +1,4 @@
+using System.Linq;
 using Content.Server.Administration.Logs;
 using Content.Server.Damage.Systems;
 using Content.Server.Effects;
@@ -6,6 +7,7 @@ using Content.Shared.Camera;
 using Content.Shared.Damage;
 using Content.Shared.Damage.Events;
 using Content.Shared.Database;
+using Content.Shared.Mobs.Components;
 using Content.Shared.Projectiles;
 using Robust.Shared.Physics.Events;
 using Robust.Shared.Player;
@@ -20,6 +22,7 @@ public sealed class ProjectileSystem : SharedProjectileSystem
     [Dependency] private readonly DamageableSystem _damageableSystem = default!;
     [Dependency] private readonly GunSystem _guns = default!;
     [Dependency] private readonly SharedCameraRecoilSystem _sharedCameraRecoil = default!;
+    [Dependency] private readonly IEntityManager _entityManager = default!;
 
     public override void Initialize()
     {
@@ -34,6 +37,8 @@ public sealed class ProjectileSystem : SharedProjectileSystem
         if (args.OurFixtureId != ProjectileFixture || !args.OtherFixture.Hard
             || component.DamagedEntity || component is { Weapon: null, OnlyCollideWhenShot: true, })
             return;
+
+
 
         var target = args.OtherEntity;
         // it's here so this check is only done once before possible hit
@@ -52,6 +57,26 @@ public sealed class ProjectileSystem : SharedProjectileSystem
         var modifiedDamage = _damageableSystem.TryChangeDamage(target, ev.Damage, component.IgnoreResistances, origin: component.Shooter);
         var deleted = Deleted(target);
 
+        if (TryComp<TrackingProjectileComponent>(uid, out var trackingProjectile))
+        {
+            if (!HasComp<TrackingProjectileComponent>(target) && HasComp<MobStateComponent>(target))
+            {
+                if (trackingProjectile.TrackedEntities.Any())
+                {
+                    foreach (var entity in trackingProjectile.TrackedEntities)
+                    {
+                        _entityManager.RemoveComponent<TrackingProjectileComponent>(entity);
+                    }
+                }
+
+                _entityManager.AddComponent<TrackingProjectileComponent>(target);
+                trackingProjectile.TrackedEntity = target;
+                trackingProjectile.TrackedEntityName = otherName;
+                trackingProjectile.TrackedEntities.Add(target);
+            }
+            // TODO: Add message that target is already tracked or can't be tracked
+        }
+
         if (modifiedDamage is not null && EntityManager.EntityExists(component.Shooter))
         {
             if (modifiedDamage.AnyPositive() && !deleted)
@@ -61,6 +86,7 @@ public sealed class ProjectileSystem : SharedProjectileSystem
                 LogType.BulletHit,
                 HasComp<ActorComponent>(target) ? LogImpact.Extreme : LogImpact.High,
                 $"Projectile {ToPrettyString(uid):projectile} shot by {ToPrettyString(component.Shooter!.Value):user} hit {otherName:target} and dealt {modifiedDamage.GetTotal():damage} damage");
+
         }
 
         if (!deleted)
