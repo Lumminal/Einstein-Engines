@@ -48,6 +48,12 @@ public sealed partial class PinpointerComponent : Component
     [DataField("canRetarget"), ViewVariables(VVAccess.ReadWrite)]
     public bool CanRetarget;
 
+    /// <summary>
+    ///     Whether or not to stop tracking the target (for the DL-88 system).
+    /// </summary>
+    [DataField("stopTracking"), ViewVariables(VVAccess.ReadWrite)]
+    public bool StopTracking;
+
     [ViewVariables]
     public EntityUid? Target = null;
 

@@ -40,7 +40,8 @@ criminal-records-console-not-wanted = {$name} is no longer wanted.
 criminal-records-console-paroled = {$name} has been released on parole by {$officer}.
 criminal-records-console-not-parole = {$name} is no longer on parole.
 criminal-records-console-unknown-officer = <unknown officer>
-
+dl88-track-message = {$name} is being tracked by {$bolt}. A warrant has been created.
+dl88-track-stop-message = {$name} has stopped being tracked.
 ## Filters
 
 criminal-records-filter-placeholder = Input text and press "Enter"

@@ -65,8 +65,10 @@
   - type: Icon
     state: pinpointer-crew
   - type: Pinpointer
-    component: TrackingProjectile
+    component: TrackedTargetProjectile
     updateTargetName: true
+    targetName:
+    canRetarget: true
 
 - type: entity
   name: syndicate pinpointer

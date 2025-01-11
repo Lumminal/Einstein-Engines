@@ -2,13 +2,16 @@ using System.Linq;
 using Content.Server.Administration.Logs;
 using Content.Server.Damage.Systems;
 using Content.Server.Effects;
+using Content.Server.Radio.EntitySystems;
 using Content.Server.Weapons.Ranged.Systems;
 using Content.Shared.Camera;
+using Content.Shared.CriminalRecords.Systems;
 using Content.Shared.Damage;
 using Content.Shared.Damage.Events;
 using Content.Shared.Database;
 using Content.Shared.Mobs.Components;
 using Content.Shared.Projectiles;
+using Content.Shared.Security;
 using Robust.Shared.Physics.Events;
 using Robust.Shared.Player;
 using Robust.Shared.Utility;
@@ -23,12 +26,16 @@ public sealed class ProjectileSystem : SharedProjectileSystem
     [Dependency] private readonly GunSystem _guns = default!;
     [Dependency] private readonly SharedCameraRecoilSystem _sharedCameraRecoil = default!;
     [Dependency] private readonly IEntityManager _entityManager = default!;
+    [Dependency] private readonly RadioSystem _radio = default!;
+    [Dependency] private readonly SharedCriminalRecordsConsoleSystem _criminal = default!;
 
     public override void Initialize()
     {
         base.Initialize();
         SubscribeLocalEvent<ProjectileComponent, StartCollideEvent>(OnStartCollide);
+        SubscribeLocalEvent<TrackingProjectileComponent, StartCollideEvent>(OnTrackCollide);
         SubscribeLocalEvent<EmbeddableProjectileComponent, DamageExamineEvent>(OnDamageExamine, after: [typeof(DamageOtherOnHitSystem)]);
+
     }
 
     private void OnStartCollide(EntityUid uid, ProjectileComponent component, ref StartCollideEvent args)
@@ -56,26 +63,6 @@ public sealed class ProjectileSystem : SharedProjectileSystem
         var otherName = ToPrettyString(target);
         var modifiedDamage = _damageableSystem.TryChangeDamage(target, ev.Damage, component.IgnoreResistances, origin: component.Shooter);
         var deleted = Deleted(target);
-
-        if (TryComp<TrackingProjectileComponent>(uid, out var trackingProjectile))
-        {
-            if (!HasComp<TrackingProjectileComponent>(target) && HasComp<MobStateComponent>(target))
-            {
-                if (trackingProjectile.TrackedEntities.Any())
-                {
-                    foreach (var entity in trackingProjectile.TrackedEntities)
-                    {
-                        _entityManager.RemoveComponent<TrackingProjectileComponent>(entity);
-                    }
-                }
-
-                _entityManager.AddComponent<TrackingProjectileComponent>(target);
-                trackingProjectile.TrackedEntity = target;
-                trackingProjectile.TrackedEntityName = otherName;
-                trackingProjectile.TrackedEntities.Add(target);
-            }
-            // TODO: Add message that target is already tracked or can't be tracked
-        }
 
         if (modifiedDamage is not null && EntityManager.EntityExists(component.Shooter))
         {
@@ -106,6 +93,50 @@ public sealed class ProjectileSystem : SharedProjectileSystem
             RaiseNetworkEvent(new ImpactEffectEvent(component.ImpactEffect, GetNetCoordinates(xform.Coordinates)), Filter.Pvs(xform.Coordinates, entityMan: EntityManager));
     }
 
+    /// <summary>
+    ///  Handles interaction with Tracking Projectile and Crew Pinpointer.
+    /// </summary>
+    private void OnTrackCollide(EntityUid uid, TrackingProjectileComponent component, ref StartCollideEvent args)
+    {
+        var target = args.OtherEntity;
+        var bolt = args.OurEntity;
+
+        if (!HasComp<MobStateComponent>(target))
+            return;
+
+        if (HasComp<TrackedTargetProjectileComponent>(target))
+            return;
+
+        var query = EntityQueryEnumerator<TrackedTargetProjectileComponent>();
+        while (query.MoveNext(out var entityUid, out _))
+        {
+            _entityManager.RemoveComponent<TrackedTargetProjectileComponent>(entityUid);
+
+            if (entityUid.IsValid())
+            {
+                _radio.SendRadioMessage(
+                    bolt,
+                    Loc.GetString("dl88-track-stop-message", ("name", target)),
+                    "Security",
+                    entityUid);
+            }
+        }
+
+        _entityManager.AddComponent<TrackedTargetProjectileComponent>(target);
+        component.TrackedEntity = target;
+        // DEBUG
+        var track = new (string, Object)[] { ("name", target), ("bolt", bolt) };
+        _criminal.UpdateCriminalIdentity(ToPrettyString(target), SecurityStatus.Wanted);
+
+        _radio.SendRadioMessage(
+            bolt,
+            Loc.GetString("dl88-track-message", track),
+            "Security",
+            target);
+
+
+    }
+
     private void OnDamageExamine(EntityUid uid, EmbeddableProjectileComponent component, ref DamageExamineEvent args)
     {
         if (!component.EmbedOnThrow)
@@ -122,4 +153,6 @@ public sealed class ProjectileSystem : SharedProjectileSystem
         var staminaCostMarkup = FormattedMessage.FromMarkupOrThrow(Loc.GetString(loc));
         args.Message.AddMessage(staminaCostMarkup);
     }
+
+
 }

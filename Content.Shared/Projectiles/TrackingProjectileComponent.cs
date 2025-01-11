@@ -16,7 +16,4 @@ public sealed partial class TrackingProjectileComponent : Component
 
     [DataField, AutoNetworkedField]
     public EntityUid? TrackedEntity;
-
-    [DataField, AutoNetworkedField]
-    public string? TrackedEntityName;
 }
