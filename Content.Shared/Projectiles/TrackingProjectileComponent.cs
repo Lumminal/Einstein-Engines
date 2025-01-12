@@ -16,4 +16,10 @@ public sealed partial class TrackingProjectileComponent : Component
 
     [DataField, AutoNetworkedField]
     public EntityUid? TrackedEntity;
+
+    [DataField, AutoNetworkedField]
+    public string? TrackedEntityName;
+
+    [DataField, AutoNetworkedField]
+    public bool RadioMsgSent = false;
 }

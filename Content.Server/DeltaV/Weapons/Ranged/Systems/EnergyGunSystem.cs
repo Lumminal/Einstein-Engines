@@ -151,7 +151,6 @@ public sealed class EnergyGunSystem : EntitySystem
             }
         }
     }
-
     private void UpdateAppearance(EntityUid uid, EnergyGunFireModeState state)
     {
         _appearance.SetData(uid, EnergyGunFireModeVisuals.State, state);

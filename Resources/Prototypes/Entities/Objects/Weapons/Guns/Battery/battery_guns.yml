@@ -191,10 +191,10 @@
     zeroVisible: true
 
 - type: entity
-  name: dl-88 energy revolver
+  name: DL-88 energy revolver
   parent: BaseWeaponBatterySmall
   id: WeaponEnergyTrackerRevolver
-  description: This is an expensive, modern recreation of an antique laser gun. This gun has several unique firemodes, but lacks the ability to recharge over time.
+  description: A "modern" take on the classic revolver. Issued to the Detective and comes with a Disabler, Overcharged, and Tracker Mode.
   components:
   - type: Sprite
     sprite: Objects/Weapons/Guns/Battery/dl88energyrevolver.rsi
