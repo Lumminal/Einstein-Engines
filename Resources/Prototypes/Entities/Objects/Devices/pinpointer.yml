@@ -67,8 +67,7 @@
   - type: Pinpointer
     component: TrackedTargetProjectile
     updateTargetName: true
-    targetName:
-    canRetarget: true
+
 
 - type: entity
   name: syndicate pinpointer

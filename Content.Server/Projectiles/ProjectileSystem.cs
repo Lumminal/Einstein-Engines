@@ -1,25 +1,12 @@
-using System.Linq;
 using Content.Server.Administration.Logs;
-using Content.Server.Chat.Managers;
-using Content.Server.Chat.Systems;
-using Content.Server.CriminalRecords.Systems;
 using Content.Server.Damage.Systems;
 using Content.Server.Effects;
-using Content.Server.Popups;
-using Content.Server.Radio.EntitySystems;
 using Content.Server.Weapons.Ranged.Systems;
 using Content.Shared.Camera;
-using Content.Shared.Chat;
-using Content.Shared.CriminalRecords.Systems;
 using Content.Shared.Damage;
 using Content.Shared.Damage.Events;
 using Content.Shared.Database;
-using Content.Shared.Humanoid;
-using Content.Shared.Mobs.Components;
-using Content.Shared.Popups;
 using Content.Shared.Projectiles;
-using Content.Shared.Security;
-using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Robust.Shared.Physics.Events;
 using Robust.Shared.Player;
 using Robust.Shared.Utility;
@@ -33,16 +20,11 @@ public sealed class ProjectileSystem : SharedProjectileSystem
     [Dependency] private readonly DamageableSystem _damageableSystem = default!;
     [Dependency] private readonly GunSystem _guns = default!;
     [Dependency] private readonly SharedCameraRecoilSystem _sharedCameraRecoil = default!;
-    [Dependency] private readonly IEntityManager _entityManager = default!;
-    [Dependency] private readonly RadioSystem _radio = default!;
-    [Dependency] private readonly SharedCriminalRecordsConsoleSystem _criminal = default!;
-    [Dependency] private readonly SecurityStatus _securityStatus = default!;
 
     public override void Initialize()
     {
         base.Initialize();
         SubscribeLocalEvent<ProjectileComponent, StartCollideEvent>(OnStartCollide);
-        SubscribeLocalEvent<TrackingProjectileComponent, StartCollideEvent>(OnTrackCollide);
         SubscribeLocalEvent<EmbeddableProjectileComponent, DamageExamineEvent>(OnDamageExamine, after: [typeof(DamageOtherOnHitSystem)]);
 
     }
@@ -102,57 +84,6 @@ public sealed class ProjectileSystem : SharedProjectileSystem
             RaiseNetworkEvent(new ImpactEffectEvent(component.ImpactEffect, GetNetCoordinates(xform.Coordinates)), Filter.Pvs(xform.Coordinates, entityMan: EntityManager));
     }
 
-    /// <summary>
-    ///  Handles interaction with Tracking Projectile and Crew Pinpointer.
-    /// </summary>
-    private void OnTrackCollide(EntityUid uid, TrackingProjectileComponent component, ref StartCollideEvent args)
-    {
-        var target = args.OtherEntity;
-        var targetName = Name(target);
-        var bolt = args.OurEntity;
-
-        if (!HasComp<MobStateComponent>(target) || !HasComp<HumanoidAppearanceComponent>(target))
-            return;
-
-        if (HasComp<TrackedTargetProjectileComponent>(target))
-            return;
-
-        if (component.TrackedEntity != target && component.TrackedEntity != null)
-        {
-            var query = EntityQueryEnumerator<TrackedTargetProjectileComponent>();
-            while (query.MoveNext(out var prevTrackedUid, out _))
-            {
-                _entityManager.RemoveComponent<TrackedTargetProjectileComponent>(prevTrackedUid);
-            }
-        }
-
-        _entityManager.AddComponent<TrackedTargetProjectileComponent>(target);
-        component.TrackedEntity = target;
-
-        // TODO: find a way to send an alt message if person is already wanted
-        {
-            _criminal.UpdateCriminalIdentity(targetName, SecurityStatus.Wanted);
-            _criminal.SetCriminalIcon(targetName, SecurityStatus.Wanted, target);
-        }
-
-        if (!component.RadioMsgSent)
-        {
-            string msg;
-            if (_securityStatus.HasFlag(SecurityStatus.None))
-                msg = "dl88-track-message";
-            else
-                msg = "dl88-track-warrant-already";
-
-            var track = new (string, Object)[] { ("name", target), ("bolt", bolt) };
-            _radio.SendRadioMessage(
-                bolt,
-                Loc.GetString(msg, track),
-                "Security",
-                target);
-            component.RadioMsgSent = true;
-        }
-
-    }
 
     private void OnDamageExamine(EntityUid uid, EmbeddableProjectileComponent component, ref DamageExamineEvent args)
     {

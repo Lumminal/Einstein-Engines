@@ -42,6 +42,8 @@ criminal-records-console-not-parole = {$name} is no longer on parole.
 criminal-records-console-unknown-officer = <unknown officer>
 dl88-track-message = {$name} is being tracked by {$bolt}. A warrant has been created.
 dl88-track-warrant-already = {$name} is being tracked by {$bolt}. A warrant has already been made.
+crew-pinpointer-stop-tracking = Stop Tracking
+
 ## Filters
 
 criminal-records-filter-placeholder = Input text and press "Enter"
