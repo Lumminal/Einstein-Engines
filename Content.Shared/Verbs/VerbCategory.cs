@@ -73,6 +73,8 @@ namespace Content.Shared.Verbs
         public static readonly VerbCategory Unbuckle =
             new("verb-categories-unbuckle", "/Textures/Interface/VerbIcons/unbuckle.svg.192dpi.png");
 
+        public static readonly VerbCategory StopTracking = new("verb-categories-stop-tracking");
+
         public static readonly VerbCategory Rotate =
             new("verb-categories-rotate", "/Textures/Interface/VerbIcons/refresh.svg.192dpi.png", iconsOnly: true)
                 { Columns = 5 };
@@ -106,5 +108,6 @@ namespace Content.Shared.Verbs
 
         public static readonly VerbCategory BloodSpells = new("verb-categories-blood-cult",
             new SpriteSpecifier.Rsi(new ResPath("/Textures/WhiteDream/BloodCult/actions.rsi"), "blood_spells"));
+
     }
 }

@@ -8,7 +8,7 @@ namespace Content.Server.Pinpointer;
 
 public sealed class CrewPinpointerSystem : EntitySystem
 {
-    [Dependency] private readonly IEntityManager _entityManager = default!;
+    [Dependency] private readonly SharedPinpointerSystem _sharedPinpointerSystem = default!;
     public override void Initialize()
     {
         base.Initialize();
@@ -17,9 +17,14 @@ public sealed class CrewPinpointerSystem : EntitySystem
 
     }
 
+    // <summary>
+    // Stops tracking current target with verb action.
+    // </summary>
     private void CrewPinpointerStop(EntityUid uid, PinpointerComponent component, GetVerbsEvent<Verb> args)
     {
-        // TODO FIX THIS and move
+        // TODO: fix question mark going out of screen
+
+        var disable = true;
 
         if (!args.CanAccess || !args.CanInteract || args.Hands == null)
             return;
@@ -27,18 +32,24 @@ public sealed class CrewPinpointerSystem : EntitySystem
         if (component.Component != "TrackedTargetProjectile")
             return;
 
+        if (component.HasTarget && !component.IsActive)
+            disable = false;
+
         var v = new Verb
         {
             Priority = 1,
-            Category = VerbCategory.Interaction,
-            Text = Loc.GetString("crew-pinpointer-stop-tracking"),
+            Disabled = disable,
+            Text = Loc.GetString("verb-common-stop-tracking"), // don't forget to remove crew-pinpointer-stop-tracking from the other .ftl
             Impact = LogImpact.Low,
             DoContactInteraction = true,
             Act = () =>
             {
-                var query = EntityQueryEnumerator<TrackedTargetProjectileComponent>();
-                while (query.MoveNext(out var prevTrackedUid, out _))
-                    _entityManager.RemoveComponent<TrackedTargetProjectileComponent>(prevTrackedUid);
+                _sharedPinpointerSystem.SetDistance(uid, Distance.Unknown, component);
+                _sharedPinpointerSystem.TrySetArrowAngle(uid, 0f, component);
+                if (component.Target != null)
+                    RemComp<TrackedTargetProjectileComponent>(component.Target.Value);
+                disable = true;
+
             }
         };
 
