@@ -24,6 +24,9 @@ public sealed class TrackProjectileSystem : EntitySystem
 
     }
 
+    /// <summary>
+    ///  Handles collision with target. Updates criminal identity. Tracks one target at a time. Sends announcement message over security radio when tracking.
+    /// </summary>
     private void OnTrackCollide(EntityUid uid, TrackingProjectileComponent component, ref StartCollideEvent args)
     {
         var target = args.OtherEntity;
