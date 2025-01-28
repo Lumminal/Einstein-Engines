@@ -204,11 +204,8 @@
     - state: mode-disabler
       shader: unshaded
       map: [ "Firemode" ]
-    - state: mode-special
-      shader: unshaded
-      map: [ "Firemode"]
     - state: mag-unshaded-1
-      map: [ "enum.GunVisualLayers.MagUnshaded" ]
+      map: [ "enum.GunVisualLayers.MagUnshaded"]
       shader: unshaded
   - type: Clothing
     sprite: Objects/Weapons/Guns/Battery/dl88energyrevolver.rsi
