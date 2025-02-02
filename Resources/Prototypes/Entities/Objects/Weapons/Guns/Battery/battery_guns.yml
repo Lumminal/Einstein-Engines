@@ -245,7 +245,6 @@
         Firemode:
           Disabler: { state: mode-disabler }
           Special: { state: mode-special }
-  - type: OverCharge
   - type: Tag
     tags:
     - Sidearm
