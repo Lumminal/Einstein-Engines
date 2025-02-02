@@ -1,7 +1,7 @@
 {
     "version": 1,
     "license": "CC-BY-SA-3.0",
-    "copyright": "Re-drawn by Luminal, original model from Contra from Paradise Station",
+    "copyright": "Re-drawn by Luminal, original model from Contra from Paradise Station https://github.com/ParadiseSS13/Paradise/commit/705578b23b81c46463f92381afc7e0305ed87cd6",
     "size": {
       "x": 32,
       "y": 32
@@ -53,4 +53,3 @@
           }
       ]
   }
-  
