@@ -42,8 +42,9 @@ public sealed class TrackProjectileSystem : EntitySystem
         if (component.TrackedEntity != target && component.TrackedEntity != null)
         {
             var query = EntityQueryEnumerator<TrackedTargetProjectileComponent>();
-            while (query.MoveNext(out var prevTrackedUid, out _))
-                _entityManager.RemoveComponent<TrackedTargetProjectileComponent>(prevTrackedUid);
+            while (query.MoveNext(out var uid2, out var comp))
+                if (comp.RemainingTime > 0)
+                    return;
         }
 
         _entityManager.AddComponent<TrackedTargetProjectileComponent>(target);

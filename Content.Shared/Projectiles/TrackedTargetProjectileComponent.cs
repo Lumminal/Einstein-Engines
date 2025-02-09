@@ -6,4 +6,13 @@ namespace Content.Shared.Projectiles;
 [RegisterComponent]
 public sealed partial class TrackedTargetProjectileComponent : Component
 {
+    /// <summary>
+    ///     Cooldown that removes target once it hits the specific time. Used for crew pinpointer.
+    /// </summary>
+    [DataField("timer")]
+    [ViewVariables(VVAccess.ReadWrite)]
+    public int Timer = 60;
+
+    [ViewVariables(VVAccess.ReadWrite)]
+    public float RemainingTime;
 }

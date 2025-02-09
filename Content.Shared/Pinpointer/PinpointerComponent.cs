@@ -48,18 +48,6 @@ public sealed partial class PinpointerComponent : Component
     [DataField("canRetarget"), ViewVariables(VVAccess.ReadWrite)]
     public bool CanRetarget;
 
-    /// <summary>
-    ///     Cooldown that removes target once it hits the specific time. Used for crew pinpointer.
-    /// </summary>
-    [ViewVariables]
-    public TimeSpan CooldownTime = TimeSpan.FromSeconds(5f);
-
-    /// <summary>
-    ///     Time since last target.
-    /// </summary>
-    [ViewVariables]
-    public TimeSpan LastTarget;
-
     [ViewVariables]
     public EntityUid? Target = null;
 
