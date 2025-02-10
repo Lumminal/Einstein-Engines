@@ -64,6 +64,8 @@ public sealed class CrewPinpointerSystem : EntitySystem
             if (pinpointer.Target == uid)
             {
                 // Clear the target reference on the PinpointerComponent
+                _pinpointer.TrySetArrowAngle(pinUid, 0, pinpointer);
+                _pinpointer.SetDistance(pinUid, Distance.Unknown, pinpointer);
                 _pinpointer.SetTarget(pinUid, null, pinpointer);
                 _pinpointer.TogglePinpointer(pinUid, pinpointer);
             }
