@@ -29,11 +29,11 @@ public sealed class CrewPinpointerSystem : EntitySystem
         base.Update(frameTime);
 
         var query = EntityQueryEnumerator<PinpointerComponent>();
-        while (query.MoveNext(out var uid, out var crew))
+        while (query.MoveNext(out var uid, out var pinpointer))
         {
-            if (crew.HasTarget && crew.Component == "TrackedTargetProjectile" && crew.Target != null)
+            if (pinpointer.HasTarget && pinpointer.IsCrewPinpointer && pinpointer.Target != null)
             {
-                var target = crew.Target.Value;
+                var target = pinpointer.Target.Value;
                 TickTimer(target, frameTime);
             }
         }
@@ -63,8 +63,8 @@ public sealed class CrewPinpointerSystem : EntitySystem
         {
             if (pinpointer.Target == uid)
             {
-                // Clear the target reference on the PinpointerComponent
-                _pinpointer.TrySetArrowAngle(pinUid, 0, pinpointer);
+                // VISUAL BUG HAPPENING HERE
+                _pinpointer.TrySetArrowAngle(pinUid, 90, pinpointer);
                 _pinpointer.SetDistance(pinUid, Distance.Unknown, pinpointer);
                 _pinpointer.SetTarget(pinUid, null, pinpointer);
                 _pinpointer.TogglePinpointer(pinUid, pinpointer);

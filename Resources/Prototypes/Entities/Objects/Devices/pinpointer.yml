@@ -67,6 +67,7 @@
   - type: Pinpointer
     component: TrackedTargetProjectile
     updateTargetName: true
+    IsCrewPinpointer: true
 
 
 - type: entity

@@ -48,6 +48,13 @@ public sealed partial class PinpointerComponent : Component
     [DataField("canRetarget"), ViewVariables(VVAccess.ReadWrite)]
     public bool CanRetarget;
 
+    /// <summary>
+    ///     Whether pinpointer is a crew pinpointer.
+    /// </summary>
+    [DataField("isCrewPinpointer"), ViewVariables(VVAccess.ReadWrite)]
+    public bool IsCrewPinpointer = false;
+
+
     [ViewVariables]
     public EntityUid? Target = null;
 
