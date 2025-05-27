@@ -1,0 +1,12 @@
+- type: entity
+  id: BloodCrawlAction
+  name: Blood Crawl
+  description: JAUNT ANYWHERE BY SIMPLY BEING ON TOP OF BLOOD HAHAHAH
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: InstantAction
+    icon:
+      sprite: _EE/Mobs/Species/Xelthia/parts.rsi
+      state: full
+    event: !type:BloodCrawlEvent
+    useDelay: 2
